@@ -1,0 +1,44 @@
+{
+  "checkpoint": "C:\\Users\\Alma\\OneDrive\\Desktop\\MAJOR_PRJ\\outputs\\checkpoints_stgnn_rr\\stgnn_rr_best.pt",
+  "epoch": 7,
+  "calibrated": true,
+  "class_order": [
+    "SB",
+    "AFIB",
+    "SR",
+    "ST",
+    "SVT"
+  ],
+  "standalone_test_accuracy_own_split": 0.9611,
+  "standalone_test_macro_auroc_own_split": 0.9931,
+  "val": {
+    "n": 6362,
+    "degraded": 1483,
+    "synthetic_beats": 0,
+    "mean_beats": 12.055328513046211,
+    "mean_valid_leads": 10.622131405218484,
+    "predicted_distribution": {
+      "SB": 0.3926,
+      "AFIB": 0.2432,
+      "SR": 0.1815,
+      "ST": 0.1603,
+      "SVT": 0.0223
+    },
+    "tv_distance_from_train_prior": 0.028143456403290718
+  },
+  "test": {
+    "n": 6363,
+    "degraded": 1453,
+    "synthetic_beats": 5,
+    "mean_beats": 12.093980826654095,
+    "mean_valid_leads": 10.608360836083609,
+    "predicted_distribution": {
+      "SB": 0.3923,
+      "AFIB": 0.2398,
+      "SR": 0.1832,
+      "ST": 0.162,
+      "SVT": 0.0226
+    },
+    "tv_distance_from_train_prior": 0.029781788826823634
+  }
+}
