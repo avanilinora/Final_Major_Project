@@ -262,10 +262,7 @@ def build_label_vocab(
     whack-a-mole against this ranking metric being the wrong one.
 
     If `include_codes` is given, it is used VERBATIM as the class list —
-    `top_k`, `min_count`, and `exclude_codes` are all ignored. This is the
-    reliable way to pin down an exact, known-good class set once you've
-    seen which codes actually have real primary-label support in a run's
-    "Class distribution" log line.
+    `top_k`, `min_count`, and `exclude_codes` are all ignored. 
 
     Parameters
     ----------
@@ -384,7 +381,7 @@ def assign_label(
     -----
     This dataset is genuinely multi-label (a recording can show, e.g., both
     sinus bradycardia AND a premature complex). Picking a single "primary"
-    label is a simplification — if you need multi-label modelling, use
+    label is a simplification — if  multi-label modelling is needed, use
     ``assign_multi_label`` instead and switch the training loss to
     ``BCEWithLogitsLoss``.
     """
