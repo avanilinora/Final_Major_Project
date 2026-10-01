@@ -211,17 +211,7 @@ def plot_temporal_attention_single_lead(
     signal: np.ndarray, temporal_attention: np.ndarray, lead_name: str, class_name: str, save_path: str,
 ) -> str:
     """
-    *** Important honesty note (do not remove) ***
-    Temporal attention in this architecture is computed AFTER the 12
-    leads have already been fused (by lead-attention) into one sequence,
-    so there is exactly ONE temporal-attention trace per recording — it
-    is NOT a genuinely per-lead quantity the way Grad-CAM++ saliency is.
-    This function overlays that SAME shared trace on each lead's own raw
-    waveform for visual context per lead folder, as requested — the
-    numbers are identical across every lead's version of this plot, only
-    the black waveform underneath differs. The filename and title say so
-    explicitly so this is never mistaken for 12 independent computations.
-    """
+    
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
     T = len(signal)
     fig, ax = plt.subplots(figsize=(12, 5))
