@@ -4,23 +4,7 @@ xai/gradcam.py
 Grad-CAM++ for the TrustECG CNN-BiLSTM model, hooking the shared lead
 encoder's final convolutional block.
 
-*** Design note: why this differs from the original single-lead-loop version ***
-The original (pre-vectorization) architecture called `lead_encoder` once
-PER LEAD inside a 12-iteration Python loop. A `register_forward_hook` /
-`register_full_backward_hook` on a shared module that's invoked multiple
-times per forward pass only ever holds the state from ONE of those
-invocations (a plain assignment in the hook callback overwrites on every
-call) — so a Grad-CAM++ implementation hooked that way was, at best,
-silently explaining only one lead's activations, not a genuine
-multi-lead explanation, and at worst mixing mismatched forward/backward
-invocations if hook firing order didn't line up.
 
-This version hooks the SAME module, but because `extract_features` (see
-models/cnn2.py) now runs all 12 leads through the shared encoder in a
-single batched call, the hook fires exactly ONCE per forward pass and
-captures all leads' activations together, shape (B*L, C, T'). This is
-verified defensively below (a call counter that must equal 1) rather than
-just assumed.
 
 Produces:
   - A per-lead, per-timestep saliency map, shape (L, T) — richer than a
@@ -102,21 +86,7 @@ class GradCAMPlusPlus:
         self._forward_call_count = 0
         self._backward_call_count = 0
 
-        # *** CUDA/cuDNN fix (do not remove) ***
-        # cuDNN's fused LSTM kernel only retains the internal workspace
-        # needed for backward() when the module is in train() mode. In
-        # eval() mode — which is correct here, since we don't want
-        # Dropout/BatchNorm behaving stochastically while explaining a
-        # prediction — cuDNN discards that workspace, and calling
-        # backward() later raises:
-        #   RuntimeError: cudnn RNN backward can only be called in training mode
-        # This does NOT mean the model needs to be in train() mode; it
-        # means cuDNN's specific fused kernel can't be used here. Disabling
-        # cuDNN for just this forward+backward pair makes PyTorch fall back
-        # to its plain (non-fused) LSTM implementation, which has no such
-        # restriction — model.eval() behavior (dropout off, BatchNorm using
-        # running stats) is completely unaffected either way. Only shows up
-        # on CUDA; CPU-only environments never hit this code path.
+       
         with torch.backends.cudnn.flags(enabled=False):
             logits, lead_weights, _attn_weights, _cnn_features = self.model(x, return_lead_weights=True)
 
@@ -126,12 +96,7 @@ class GradCAMPlusPlus:
             score = logits[0, target_class]
             score.backward(retain_graph=True)
 
-        # Defensive check: the whole point of hooking the vectorized
-        # encoder is that it's called exactly once per forward pass. If
-        # this ever fires more than once, something about the model
-        # architecture changed and this CAM implementation's assumptions
-        # no longer hold — fail loudly rather than silently explain the
-        # wrong thing.
+       
         if self._forward_call_count != 1 or self._backward_call_count != 1:
             raise RuntimeError(
                 f"Expected the hooked layer to fire exactly once per "
