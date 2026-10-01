@@ -4,22 +4,7 @@ utils/metrics.py
 Classification metric functions used during training, validation, and
 evaluation.
 
-*** BUG FIX (the important one — do not revert) ***
-Every function here previously hardcoded `labels=list(range(Config.NUM_CLASSES))`
-using the Phase-1 `Config` (NUM_CLASSES = 4). Because `BaseTrainer._validate()`
-calls `calculate_all_metrics(y_true, y_pred)` with no override, this meant
-EVERY metric reported during PhysioNet training (val F1 used for checkpoint
-selection, early stopping, and LR scheduling; precision/recall/specificity)
-was silently computed over only classes {0,1,2,3} and completely ignored
-classes 4-8. This does not crash — it just quietly reports wrong numbers,
-which is almost certainly a real contributor to your metrics looking off.
 
-Fix: every function now accepts an explicit `num_classes` argument. If not
-given, it infers the label set from the union of `y_true`/`y_pred` instead
-of silently falling back to the Phase-1 constant. For evaluation scripts,
-ALWAYS pass `num_classes=PhysioNetConfig.NUM_CLASSES` explicitly so classes
-with zero predictions in a given batch still show up in the confusion
-matrix / report with a score of 0 rather than being dropped.
 
 Functions
 ---------
@@ -67,7 +52,7 @@ def _resolve_labels(y_true_np: np.ndarray, y_pred_np: np.ndarray,
 
     If `num_classes` is given, use range(num_classes) so every class is
     represented even if absent from this particular batch/split (this is
-    what you want for evaluation reports and confusion matrices). If not
+    what is needed for evaluation reports and confusion matrices). If not
     given, fall back to whatever labels are actually present in the data
     — safer than silently assuming a fixed class count belonging to a
     different track.
