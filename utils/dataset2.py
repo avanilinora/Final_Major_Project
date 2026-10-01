@@ -7,26 +7,7 @@ Works for BOTH tracks in this project:
   * MIT-BIH beat-level samples, shape (N, 360, 2)
   * PhysioNet record-level samples, shape (N, 5000, 12)
 
-`ECGDataset` and `build_dataloaders` take an explicit `num_classes`
-argument instead of silently reading the global `config.Config.NUM_CLASSES`.
-This was required to support a second track with a different, separately
-configured class count. Existing MIT-BIH call sites are unaffected: the
-default value still falls back to `Config.NUM_CLASSES` (Phase 1) — for the
-PhysioNet track, ALWAYS pass `num_classes` explicitly (train_physionet.py
-already does this).
 
-*** FIX applied ***
-`augment_signal()` previously had inconsistent indentation (mixed 1-space
-and 5-space) that would raise an IndentationError the moment `augment=True`
-was actually exercised. Re-indented consistently below.
-
-*** BUG FIX (found in a pasted version of this file — do not revert) ***
-This file previously imported `from config_physionet import Config`.
-`config_physionet.py` defines a class called `PhysioNetConfig`, not
-`Config` — that import raises `ImportError: cannot import name 'Config'
-from 'config_physionet'` the moment this module loads, before anything
-else in it can run. Fixed to import `PhysioNetConfig as Config` instead,
-which also matches the "Usage" example below.
 
 Usage
 -----
@@ -75,7 +56,7 @@ class ECGDataset(Dataset):
     num_classes : int, optional
         Total number of classes in this task. Defaults to
         ``Config.NUM_CLASSES`` (PhysioNet, per the fixed import above) —
-        pass this explicitly if you ever need a different class count.
+        pass this explicitly if  a different class count is needed
     transform : callable, optional
         Optional transform applied to each sample tensor before returning.
     """
