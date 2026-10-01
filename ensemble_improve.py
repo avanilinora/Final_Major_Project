@@ -7,9 +7,7 @@ Every method is scored by 5-fold cross-validation INSIDE the validation set
 (fit on 4/5 of val, score on the other 1/5). The method with the best val score
 is chosen BEFORE test is looked at. Only then is it refit on all of val and
 evaluated on test once, with the same significance tests as ensemble_eval.py.
-The test score of every other method is printed too, for transparency -- but
-you report the one chosen on val, not whichever happens to win on test.
-
+The test score of every other method is printed too, for transparency 
 Methods tried
 -------------
   equal          plain average of the three models' probabilities (your current baseline)
