@@ -87,15 +87,7 @@ def compute_occlusion_explanation(
     batch_size: int = 64,
     combiner=None,
 ) -> OcclusionResult:
-    """
-    x : (T, L) — ONE preprocessed recording.
-    adapters : list of ModelAdapter, each exposing .name and .predict_proba.
-    weights : (len(adapters),) — the same optimized ensemble weights used
-        for reporting, so the explanation matches the numbers you publish.
-        Ignored when `combiner` is given.
-    combiner : optional StackedCombiner (ensemble_combiner.py). Pass it so the
-        explanation is of the stack+bias ensemble you actually report.
-    """
+    
     T, L = x.shape
     num_classes = len(class_names)
 
