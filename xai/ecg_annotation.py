@@ -29,20 +29,8 @@ def detect_r_peaks(signal: np.ndarray, fs: int, min_bpm: int = 30, max_bpm: int 
     Detect R-peaks (the sharp spike of each heartbeat) in a single-lead
     signal using a relative-height + prominence peak finder.
 
-    *** Fix: was originally height = mean + 1.2*std, which is too
-    permissive on real ECG morphology (verified on a real failure case)
-    ***
-    A global mean+std threshold does not reliably separate the tall QRS
-    spike from the much smaller P-wave and T-wave bumps that sit on the
-    same lead — testing against a real 10-second recording, that
-    threshold caught both the true R-peaks AND the T-wave bumps as
-    separate "heartbeats," roughly doubling the detected count and the
-    resulting estimated heart rate (144 bpm reported vs. ~70 bpm actual).
-    Switching to a threshold relative to the signal's own peak amplitude,
-    combined with a prominence requirement (how much a peak stands out
-    from its immediate surroundings, not just its absolute height), fixed
-    this — re-tested on the same recording and it correctly found 11
-    peaks at 70.2 bpm.
+   
+    
 
     Parameters
     ----------
