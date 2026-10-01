@@ -11,18 +11,18 @@ Folder layout this file expects (project root = Final_Major_Project):
     teammates/
       inception/
         predict_wrapper.py                       (Inception teammate's wrapper)
-        train_inception_5class_recovered.py      (defines InceptionTime -- ask for it)
-        best_inception_5class_PROTECTED.pth      (checkpoint -- ask for it)
+        train_inception_5class_recovered.py      (defines InceptionTime )
+        best_inception_5class_PROTECTED.pth      (checkpoint )
       stgnn/
-        utils/predict_wrapper.py, model_stgnn_rr.py, ... (everything from the zip)
+        utils/predict_wrapper.py, model_stgnn_rr.py, 
         outputs/checkpoints_stgnn_rr/stgnn_rr_best.pt
         outputs/checkpoints_stgnn_rr/calibration_rr_epoch7.json
 
 Why the special loader: both teammates ship a file called predict_wrapper.py, and the
 STGNN folder ships its own config_physionet.py (different bandpass cut-off, extra
-fields). A plain `import` would mix them up with each other and with YOUR
+fields). A plain `import` would mix them up with each other and with cnn-bilstm
 config_physionet.py. _load_isolated() imports each teammate's code with only their
-own folder visible, then puts your modules back.
+own folder visible, then puts cnn-bilstm  modules back.
 """
 from __future__ import annotations
 
@@ -94,7 +94,7 @@ def verify_adapter(adapter, X_test, saved_test_probs, n=64, atol=1e-3):
 
 def _load_isolated(folder, filename, alias):
     """Import folder/filename as module `alias`, letting its own `import x` lines see
-    only the .py files in `folder` for any name that clashes with ours."""
+    only the .py files in `folder` for any name that clashes with cnn-bilstm."""
     path = os.path.join(folder, filename)
     if not os.path.exists(path):
         raise FileNotFoundError(f"missing {path} -- see the folder layout at the top of adapters.py")
@@ -112,7 +112,7 @@ def _load_isolated(folder, filename, alias):
             sys.path.remove(folder)
         for n in local_names:            # drop the teammate's bare-named copies ...
             sys.modules.pop(n, None)
-        sys.modules.update(saved)        # ... and put yours back
+        sys.modules.update(saved)        # ... and put cnn-bilstm back
     return mod
 
 
